@@ -14,14 +14,15 @@
 - R10: Save the best score and show it on the welcome screen.
 - R11: Restart with shuffled questions from a Play Again button.
 - R12: Provide a responsive, touch-friendly phone layout.
+- R13: Show an accessible image question with four text choices.
 
 [x] Task 1: Create welcome, quiz, and results sections with a title, description, question area, score, and status area.
 	Satisfies: R1, R6
 	Done when: Opening app/index.html shows a clear welcome screen and the page source contains separate quiz and results sections.
 
-[x] Task 2: Add 5-10 hardcoded, mixed-topic trivia questions with four choices and one correct answer each.
+[x] Task 2: Add six hardcoded coffee-identification questions with four choices and one correct answer each.
 	Satisfies: R1
-	Done when: The page source contains 5-10 questions from mixed topics, each with four choices and one correct answer.
+	Done when: The page source contains six coffee questions, each with four choices and one correct answer.
 
 [x] Task 3: Render one current question with four answers, a yellow current badge, question count, and progress bar.
 	Satisfies: R1, R3, R7
@@ -54,6 +55,10 @@
 [x] Task 10: Make the layout responsive with touch-friendly answer buttons.
 	Satisfies: R12
 	Done when: At a 320px-wide viewport, all content fits without horizontal scrolling and answer buttons remain readable and easy to tap.
+
+[x] Task 11: Add an image to each coffee-identification question.
+	Satisfies: R13
+	Done when: All six questions show the matching coffee image with useful alternative text, and selecting one of four text choices uses the normal answer feedback and scoring flow.
 
 ## Progress Log
 
@@ -116,6 +121,12 @@
 - **What changed:** Refined the phone layout with compact panel spacing, wrapping-safe labels and feedback, single-column answers, and smaller results rows. Start and Play Again buttons now have 48px touch targets, while answer buttons remain at least 64px tall.
 - **Requirement satisfied:** R12.
 - **How to test in your browser:** Open `app/index.html`, narrow the browser to 320px, and move through the welcome, quiz, feedback, and results screens. Confirm there is no horizontal scrollbar, all text remains readable, answer choices stay in one column, and the Start, answer, and Play Again buttons are easy to tap.
+
+### Task 11
+
+- **What changed:** Added `coffee-1.png` through `coffee-6.png` to the six questions and set the answer key to Cappuccino, Espresso, Latte, Frappe, Iced Coffee, and Mocha. All images work offline and include alternative text.
+- **Requirement satisfied:** R13.
+- **How to test in your browser:** Open `app/index.html`, click **Start challenge**, and complete all six questions. Confirm each numbered coffee image appears and the supplied answer sequence produces a score of 6/6.
 
 ## Verification Complete
 

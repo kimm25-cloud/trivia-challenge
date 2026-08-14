@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="title description">
+	<title id="title">A ringed planet in space</title>
+	<desc id="description">A pale gold planet surrounded by broad rings against a starry sky.</desc>
+	<defs>
+		<radialGradient id="space" cx="50%" cy="45%" r="75%">
+			<stop offset="0" stop-color="#18334f"/>
+			<stop offset="1" stop-color="#050b14"/>
+		</radialGradient>
+		<linearGradient id="planet" x1="20%" y1="15%" x2="80%" y2="85%">
+			<stop offset="0" stop-color="#fff0b8"/>
+			<stop offset="0.45" stop-color="#d8b56b"/>
+			<stop offset="1" stop-color="#8d6938"/>
+		</linearGradient>
+		<linearGradient id="ring" x1="10%" y1="30%" x2="90%" y2="70%">
+			<stop offset="0" stop-color="#806846"/>
+			<stop offset="0.5" stop-color="#f1d79b"/>
+			<stop offset="1" stop-color="#9c8054"/>
+		</linearGradient>
+		<clipPath id="front-half">
+			<rect x="0" y="270" width="960" height="270"/>
+		</clipPath>
+	</defs>
+	<rect width="960" height="540" fill="url(#space)"/>
+	<g fill="#ffffff">
+		<circle cx="92" cy="82" r="2"/><circle cx="182" cy="151" r="1.5"/><circle cx="286" cy="65" r="2.5"/>
+		<circle cx="733" cy="91" r="1.5"/><circle cx="858" cy="169" r="2.5"/><circle cx="791" cy="420" r="2"/>
+		<circle cx="117" cy="405" r="1.5"/><circle cx="254" cy="465" r="2"/><circle cx="890" cy="355" r="1.5"/>
+	</g>
+	<ellipse cx="480" cy="270" rx="355" ry="92" fill="none" stroke="url(#ring)" stroke-width="42" transform="rotate(-8 480 270)"/>
+	<circle cx="480" cy="270" r="148" fill="url(#planet)"/>
+	<path d="M344 230c81 20 191 20 272-4M337 270c92 21 207 21 287-5M350 314c78 18 183 18 260-4" fill="none" stroke="#795d37" stroke-width="10" opacity="0.28"/>
+	<ellipse cx="480" cy="270" rx="355" ry="92" clip-path="url(#front-half)" fill="none" stroke="url(#ring)" stroke-width="42" transform="rotate(-8 480 270)"/>
+	<ellipse cx="480" cy="270" rx="318" ry="70" clip-path="url(#front-half)" fill="none" stroke="#4f402e" stroke-width="5" opacity="0.65" transform="rotate(-8 480 270)"/>
+</svg>

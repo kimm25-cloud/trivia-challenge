@@ -15,7 +15,7 @@ Team Trivia Challenge is a simple trivia game where team members test their know
 
 ## Sample Data
 
-Use 5-10 sample trivia questions with four multiple-choice answers each. Hardcode the questions, answer choices, and correct answers directly in the page. Include a mix of topics such as science, history, technology, geography, and team-friendly general knowledge.
+Use six coffee-identification questions with four multiple-choice answers each. Hardcode the image paths, answer choices, and correct answers directly in the page.
 
 ## Interactive Prototype Requirements
 
@@ -55,6 +55,12 @@ Use 5-10 sample trivia questions with four multiple-choice answers each. Hardcod
 - Keep the quiz playable on phone screens with touch-friendly answer buttons.
 - **How to verify:** Narrow the browser window and confirm the answer buttons remain easy to read and tap.
 
+### R13: Image Questions
+
+- Show one coffee image for each of the six questions and ask the player to identify it from four text choices.
+- Give the image useful alternative text and keep it fully visible on phone and desktop screens.
+- **How to verify:** Complete all six questions and confirm each matching coffee image loads and can be answered using one of four choices.
+
 ## Demo Script
 
 1. Open the page and point out the saved personal best on the welcome screen.
@@ -65,12 +71,13 @@ Use 5-10 sample trivia questions with four multiple-choice answers each. Hardcod
 6. Refresh the page and confirm the personal best remains saved.
 7. Click **Play Again** and confirm the quiz restarts at question 1 with shuffled questions.
 8. Narrow the browser window and confirm the layout and answer buttons remain easy to use.
+9. Find the image question and identify the pictured object from its four choices.
 
 ## Verification Report
 
 | Requirement | Status | Evidence |
 |-------------|--------|----------|
-| R1 | PASS | Browser inspection found six hardcoded mixed-topic questions, each with four choices and one valid correct answer, while only one question was visible at a time. |
+| R1 | PASS | Browser inspection found six hardcoded coffee-identification questions, each with four choices and one valid correct answer, while only one question was visible at a time. |
 | R2 | PASS | Selecting one answer disabled all four choices and recorded the selection, preventing a second answer on the same question. |
 | R3 | PASS | The active question displayed the required current-status message with a yellow dot using `rgb(242, 189, 46)`. |
 | R4 | PASS | A correct selection displayed "Correct - great job!" in green using `rgb(22, 131, 75)`. |
@@ -82,3 +89,4 @@ Use 5-10 sample trivia questions with four multiple-choice answers each. Hardcod
 | R10 | PASS | Completing the quiz stored a best score of 3 and refreshing the page restored "3 of 6" on the welcome screen. |
 | R11 | PASS | Play Again reset the score to 0 and progress to question 1, enabled all answers, and produced a different six-question order. |
 | R12 | PASS | At 320px, welcome and quiz screens had no horizontal overflow, answer buttons were 64px tall, and the Start button was 48px tall. |
+| R13 | PASS | All six local coffee images loaded with useful alternative text, matched the supplied answer key, and produced a verified score of 6/6. |
