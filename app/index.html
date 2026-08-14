@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Team Trivia Challenge</title>
+	<style>
+		:root {
+			--ink: #17202a;
+			--muted: #5e6875;
+			--paper: #ffffff;
+			--canvas: #f4f1ea;
+			--navy: #17324d;
+			--navy-light: #eaf0f5;
+			--yellow: #f2bd2e;
+			--yellow-soft: #fff4c7;
+			--green: #16834b;
+			--green-soft: #e4f5eb;
+			--red: #c73e3e;
+			--red-soft: #fbe8e6;
+			--line: #d9dde1;
+			--shadow: 0 18px 45px rgba(23, 50, 77, 0.12);
+		}
+
+		* {
+			box-sizing: border-box;
+		}
+
+		body {
+			margin: 0;
+			min-height: 100vh;
+			color: var(--ink);
+			background:
+				linear-gradient(rgba(23, 50, 77, 0.045) 1px, transparent 1px),
+				linear-gradient(90deg, rgba(23, 50, 77, 0.045) 1px, transparent 1px),
+				var(--canvas);
+			background-size: 32px 32px;
+			font-family: Aptos, "Trebuchet MS", sans-serif;
+		}
+
+		.site-header {
+			color: #ffffff;
+			background: var(--navy);
+			border-bottom: 5px solid var(--yellow);
+		}
+
+		.header-inner,
+		main {
+			width: min(100% - 40px, 980px);
+			margin: 0 auto;
+		}
+
+		.header-inner {
+			display: flex;
+			align-items: center;
+			gap: 18px;
+			padding: 24px 0;
+		}
+
+		.brand-mark {
+			display: grid;
+			flex: 0 0 52px;
+			width: 52px;
+			height: 52px;
+			place-items: center;
+			color: var(--navy);
+			background: var(--yellow);
+			border-radius: 6px;
+			font: 700 25px/1 Georgia, serif;
+		}
+
+		h1,
+		h2,
+		p {
+			margin-top: 0;
+		}
+
+		h1 {
+			margin-bottom: 4px;
+			font: 700 clamp(1.65rem, 4vw, 2.25rem)/1.1 Georgia, serif;
+		}
+
+		.subtitle {
+			max-width: 680px;
+			margin-bottom: 0;
+			color: #dbe5ed;
+			line-height: 1.5;
+		}
+
+		main {
+			padding: 42px 0 56px;
+		}
+
+		.quiz-shell {
+			overflow: hidden;
+			background: var(--paper);
+			border: 1px solid var(--line);
+			border-radius: 8px;
+			box-shadow: var(--shadow);
+		}
+
+		.welcome {
+			padding: 56px 36px;
+			text-align: center;
+		}
+
+		.welcome-label {
+			margin-bottom: 12px;
+			color: var(--green);
+			font-size: 0.78rem;
+			font-weight: 800;
+			letter-spacing: 0.08em;
+			text-transform: uppercase;
+		}
+
+		.welcome h2 {
+			margin-bottom: 14px;
+			font: 700 2rem/1.2 Georgia, serif;
+		}
+
+		.welcome-description {
+			max-width: 620px;
+			margin: 0 auto 18px;
+			color: var(--muted);
+			font-size: 1.05rem;
+			line-height: 1.6;
+		}
+
+		.personal-best {
+			display: flex;
+			width: fit-content;
+			margin: 0 auto 26px;
+			padding: 9px 13px;
+			align-items: baseline;
+			gap: 8px;
+			color: var(--navy);
+			background: var(--navy-light);
+			border: 1px solid #cbd9e4;
+			border-radius: 5px;
+		}
+
+		.personal-best-label {
+			color: var(--muted);
+			font-size: 0.78rem;
+			font-weight: 800;
+			letter-spacing: 0.08em;
+			text-transform: uppercase;
+		}
+
+		.quiz-toolbar {
+			display: grid;
+			grid-template-columns: 1fr auto;
+			gap: 24px;
+			align-items: center;
+			padding: 20px 28px;
+			background: #f9fafb;
+			border-bottom: 1px solid var(--line);
+		}
+
+		.progress-meta {
+			display: flex;
+			justify-content: space-between;
+			gap: 16px;
+			margin-bottom: 9px;
+			color: var(--muted);
+			font-size: 0.86rem;
+			font-weight: 700;
+		}
+
+		.progress-track {
+			width: 100%;
+			height: 7px;
+			overflow: hidden;
+			background: #e3e7ea;
+			border-radius: 999px;
+		}
+
+		.progress-fill {
+			width: 0;
+			height: 100%;
+			background: var(--yellow);
+			transition: width 280ms ease;
+		}
+
+		.score-block {
+			min-width: 94px;
+			padding-left: 24px;
+			text-align: center;
+			border-left: 1px solid var(--line);
+		}
+
+		.score-label {
+			display: block;
+			margin-bottom: 2px;
+			color: var(--muted);
+			font-size: 0.75rem;
+			font-weight: 800;
+			letter-spacing: 0.08em;
+			text-transform: uppercase;
+		}
+
+		.score-value {
+			color: var(--navy);
+			font: 700 1.7rem/1 Georgia, serif;
+		}
+
+		.quiz-content {
+			padding: 34px 36px 38px;
+		}
+
+		.status-badge {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			min-height: 32px;
+			margin-bottom: 20px;
+			padding: 6px 11px;
+			color: #604b06;
+			background: var(--yellow-soft);
+			border: 1px solid #efd36b;
+			border-radius: 999px;
+			font-size: 0.8rem;
+			font-weight: 800;
+		}
+
+		.status-dot {
+			width: 9px;
+			height: 9px;
+			background: var(--yellow);
+			border-radius: 50%;
+		}
+
+		.category {
+			margin-bottom: 9px;
+			color: var(--muted);
+			font-size: 0.78rem;
+			font-weight: 800;
+			letter-spacing: 0.08em;
+			text-transform: uppercase;
+		}
+
+		.question {
+			max-width: 760px;
+			margin-bottom: 26px;
+			font: 700 clamp(1.4rem, 3vw, 1.9rem)/1.3 Georgia, serif;
+		}
+
+		.answer-list {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 12px;
+		}
+
+		.answer-button {
+			display: grid;
+			grid-template-columns: 38px 1fr;
+			gap: 12px;
+			align-items: center;
+			min-height: 64px;
+			padding: 12px 16px;
+			color: var(--ink);
+			text-align: left;
+			background: #ffffff;
+			border: 1px solid #cfd5da;
+			border-radius: 6px;
+			cursor: pointer;
+			font: 700 0.96rem/1.35 Aptos, "Trebuchet MS", sans-serif;
+			transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+		}
+
+		.answer-button > span:last-child {
+			min-width: 0;
+			overflow-wrap: anywhere;
+		}
+
+		.answer-button:hover:not(:disabled),
+		.answer-button:focus-visible {
+			background: var(--navy-light);
+			border-color: var(--navy);
+			outline: none;
+			transform: translateY(-2px);
+		}
+
+		.answer-button:disabled {
+			cursor: default;
+		}
+
+		.answer-key {
+			display: grid;
+			width: 36px;
+			height: 36px;
+			place-items: center;
+			color: var(--navy);
+			background: var(--navy-light);
+			border-radius: 4px;
+			font-weight: 900;
+		}
+
+		.answer-button.correct {
+			color: #0b6035;
+			background: var(--green-soft);
+			border-color: var(--green);
+		}
+
+		.answer-button.correct .answer-key {
+			color: #ffffff;
+			background: var(--green);
+		}
+
+		.answer-button.incorrect {
+			color: #8e2626;
+			background: var(--red-soft);
+			border-color: var(--red);
+		}
+
+		.answer-button.incorrect .answer-key {
+			color: #ffffff;
+			background: var(--red);
+		}
+
+		.feedback-row {
+			display: flex;
+			min-height: 62px;
+			align-items: center;
+			justify-content: space-between;
+			gap: 18px;
+			margin-top: 22px;
+		}
+
+		.feedback {
+			display: none;
+			align-items: center;
+			gap: 10px;
+			margin: 0;
+			font-weight: 800;
+		}
+
+		.feedback.visible {
+			display: flex;
+		}
+
+		.feedback.correct {
+			color: var(--green);
+		}
+
+		.feedback.incorrect {
+			color: var(--red);
+		}
+
+		.feedback .status-dot {
+			background: currentColor;
+		}
+
+		.primary-button {
+			min-height: 44px;
+			padding: 11px 20px;
+			color: #ffffff;
+			background: var(--navy);
+			border: 0;
+			border-radius: 5px;
+			cursor: pointer;
+			font: 800 0.9rem/1 Aptos, "Trebuchet MS", sans-serif;
+		}
+
+		.primary-button:hover,
+		.primary-button:focus-visible {
+			background: #244f72;
+			outline: 3px solid rgba(23, 50, 77, 0.2);
+			outline-offset: 2px;
+		}
+
+		.next-button {
+			visibility: hidden;
+		}
+
+		.next-button.visible {
+			visibility: visible;
+		}
+
+		.results {
+			display: none;
+			padding: 54px 36px;
+			text-align: center;
+		}
+
+		.results.visible {
+			display: block;
+		}
+
+		.result-mark {
+			display: grid;
+			width: 70px;
+			height: 70px;
+			margin: 0 auto 20px;
+			place-items: center;
+			color: var(--navy);
+			background: var(--yellow);
+			border-radius: 50%;
+			font: 700 2rem/1 Georgia, serif;
+		}
+
+		.results h2 {
+			margin-bottom: 10px;
+			font: 700 2rem/1.2 Georgia, serif;
+		}
+
+		.result-summary {
+			margin-bottom: 8px;
+			color: var(--muted);
+			font-size: 1.05rem;
+		}
+
+		.performance-message {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			margin: 4px 0 0;
+			padding: 7px 12px;
+			border: 1px solid currentColor;
+			border-radius: 999px;
+			font-weight: 800;
+		}
+
+		.performance-message.amazing {
+			color: var(--green);
+			background: var(--green-soft);
+		}
+
+		.performance-message.good-effort {
+			color: #725600;
+			background: var(--yellow-soft);
+		}
+
+		.performance-message.keep-practicing {
+			color: var(--red);
+			background: var(--red-soft);
+		}
+
+		.final-score {
+			margin: 22px 0 8px;
+			color: var(--navy);
+			font: 700 3.2rem/1 Georgia, serif;
+		}
+
+		.result-percentage {
+			margin-bottom: 30px;
+			color: var(--muted);
+			font-weight: 800;
+		}
+
+		.result-details {
+			display: grid;
+			max-width: 720px;
+			margin: 0 auto 30px;
+			padding: 0;
+			gap: 10px;
+			text-align: left;
+			list-style: none;
+		}
+
+		.result-item {
+			display: grid;
+			grid-template-columns: 12px 1fr;
+			gap: 12px;
+			padding: 14px 16px;
+			background: #f9fafb;
+			border: 1px solid var(--line);
+			border-left: 4px solid currentColor;
+			border-radius: 5px;
+		}
+
+		.result-item.correct-result {
+			color: var(--green);
+		}
+
+		.result-item.incorrect-result {
+			color: var(--red);
+		}
+
+		.result-item .status-dot {
+			margin-top: 5px;
+			background: currentColor;
+		}
+
+		.result-question {
+			margin-bottom: 4px;
+			color: var(--ink);
+			font-weight: 800;
+		}
+
+		.result-answer {
+			margin-bottom: 0;
+			color: var(--muted);
+			font-size: 0.9rem;
+			line-height: 1.45;
+		}
+
+		.high-score {
+			margin-bottom: 28px;
+			color: var(--muted);
+			font-size: 0.9rem;
+			font-weight: 700;
+		}
+
+		.hidden {
+			display: none;
+		}
+
+		@media (max-width: 650px) {
+			.header-inner,
+			main {
+				width: min(100% - 24px, 980px);
+			}
+
+			.header-inner {
+				align-items: flex-start;
+				gap: 12px;
+				padding: 20px 0;
+			}
+
+			.brand-mark {
+				flex-basis: 44px;
+				width: 44px;
+				height: 44px;
+			}
+
+			main {
+				padding: 24px 0 36px;
+			}
+
+			.welcome,
+			.results {
+				padding: 34px 20px;
+			}
+
+			.personal-best {
+				max-width: 100%;
+				flex-wrap: wrap;
+				justify-content: center;
+			}
+
+			.quiz-toolbar {
+				grid-template-columns: minmax(0, 1fr) auto;
+				gap: 14px;
+				padding: 17px 18px;
+			}
+
+			.progress-meta {
+				flex-wrap: wrap;
+				gap: 4px 12px;
+			}
+
+			.score-block {
+				min-width: 72px;
+				padding-left: 14px;
+			}
+
+			.quiz-content {
+				padding: 26px 20px 24px;
+			}
+
+			.answer-list {
+				grid-template-columns: 1fr;
+			}
+
+			.answer-button {
+				width: 100%;
+			}
+
+			.status-badge,
+			.feedback {
+				max-width: 100%;
+				line-height: 1.4;
+			}
+
+			.feedback-row {
+				align-items: stretch;
+				flex-direction: column;
+			}
+
+			.primary-button,
+			.next-button {
+				min-height: 48px;
+			}
+
+			.next-button {
+				width: 100%;
+			}
+
+			.result-item {
+				padding: 12px;
+			}
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			*,
+			*::before,
+			*::after {
+				scroll-behavior: auto !important;
+				transition: none !important;
+			}
+		}
+	</style>
+</head>
+<body>
+	<header class="site-header">
+		<div class="header-inner">
+			<div class="brand-mark" aria-hidden="true">?</div>
+			<div>
+				<h1>Team Trivia Challenge</h1>
+				<p class="subtitle">Test your team's knowledge, learn something new, and compete for the high score.</p>
+			</div>
+		</div>
+	</header>
+
+	<main>
+		<section class="quiz-shell" aria-label="Team trivia quiz">
+			<section id="welcome-view" class="welcome" aria-labelledby="welcome-title">
+				<p class="welcome-label">Ready for round one?</p>
+				<h2 id="welcome-title">Bring your team knowledge</h2>
+				<p class="welcome-description">Answer quick questions across science, history, technology, geography, and teamwork. Learn together while you compete for the top score.</p>
+				<p class="personal-best"><span class="personal-best-label">Personal best</span><strong id="personal-best">No score yet</strong></p>
+				<button id="start-button" class="primary-button" type="button">Start challenge</button>
+			</section>
+
+			<section id="quiz-view" class="hidden" aria-label="Quiz questions">
+				<div class="quiz-toolbar">
+					<div>
+						<div class="progress-meta">
+							<span id="progress-text">Question 1 of 6</span>
+							<span id="progress-percent">17% complete</span>
+						</div>
+						<div class="progress-track" role="progressbar" aria-label="Quiz progress" aria-valuemin="1" aria-valuemax="6" aria-valuenow="1" aria-valuetext="Question 1 of 6, 17% complete">
+							<div id="progress-fill" class="progress-fill"></div>
+						</div>
+					</div>
+					<div class="score-block" aria-live="polite" aria-atomic="true">
+						<span class="score-label">Score</span>
+						<span id="score" class="score-value">0</span>
+					</div>
+				</div>
+
+				<div class="quiz-content">
+					<div class="status-badge">
+						<span class="status-dot" aria-hidden="true"></span>
+						<span>Current &mdash; this question is active</span>
+					</div>
+					<p id="category" class="category"></p>
+					<h2 id="question" class="question"></h2>
+					<div id="answer-list" class="answer-list"></div>
+					<div class="feedback-row">
+						<p id="feedback" class="feedback" role="status" aria-live="polite">
+							<span class="status-dot" aria-hidden="true"></span>
+							<span id="feedback-text"></span>
+						</p>
+						<button id="next-button" class="primary-button next-button" type="button">Next question</button>
+					</div>
+				</div>
+			</section>
+
+			<section id="results" class="results" aria-live="polite" aria-labelledby="results-title">
+				<div class="result-mark" aria-hidden="true">!</div>
+				<h2 id="results-title">Challenge complete</h2>
+				<p id="result-summary" class="result-summary"></p>
+				<p id="performance-message" class="performance-message"></p>
+				<p id="final-score" class="final-score"></p>
+				<p id="result-percentage" class="result-percentage"></p>
+				<ol id="result-details" class="result-details" aria-label="Answer results"></ol>
+				<p id="high-score" class="high-score"></p>
+				<button id="play-again-button" class="primary-button" type="button">Play again</button>
+			</section>
+		</section>
+	</main>
+
+	<script>
+		const questions = [
+			{
+				category: "Science",
+				question: "Which planet is known as the Red Planet?",
+				answers: ["Venus", "Mars", "Jupiter", "Mercury"],
+				correctIndex: 1
+			},
+			{
+				category: "History",
+				question: "In which year did the first person walk on the Moon?",
+				answers: ["1959", "1965", "1969", "1972"],
+				correctIndex: 2
+			},
+			{
+				category: "Technology",
+				question: "What does HTML stand for?",
+				answers: ["HyperText Markup Language", "High Transfer Machine Link", "Home Tool Markup Language", "Hyperlink Text Management Layer"],
+				correctIndex: 0
+			},
+			{
+				category: "Geography",
+				question: "Which ocean is the largest on Earth?",
+				answers: ["Atlantic", "Indian", "Arctic", "Pacific"],
+				correctIndex: 3
+			},
+			{
+				category: "General Knowledge",
+				question: "How many players from one team are on the field in soccer?",
+				answers: ["9", "10", "11", "12"],
+				correctIndex: 2
+			},
+			{
+				category: "Teamwork",
+				question: "Which action best supports effective teamwork?",
+				answers: ["Keeping ideas private", "Avoiding feedback", "Listening actively", "Working without goals"],
+				correctIndex: 2
+			}
+		];
+
+		const answerKeys = ["A", "B", "C", "D"];
+		const welcomeView = document.getElementById("welcome-view");
+		const quizView = document.getElementById("quiz-view");
+		const results = document.getElementById("results");
+		const startButton = document.getElementById("start-button");
+		const personalBestElement = document.getElementById("personal-best");
+		const questionElement = document.getElementById("question");
+		const categoryElement = document.getElementById("category");
+		const answerList = document.getElementById("answer-list");
+		const scoreElement = document.getElementById("score");
+		const progressText = document.getElementById("progress-text");
+		const progressPercent = document.getElementById("progress-percent");
+		const progressFill = document.getElementById("progress-fill");
+		const progressTrack = document.querySelector("[role='progressbar']");
+		const feedback = document.getElementById("feedback");
+		const feedbackText = document.getElementById("feedback-text");
+		const nextButton = document.getElementById("next-button");
+		const playAgainButton = document.getElementById("play-again-button");
+
+		let currentQuestionIndex = 0;
+		let score = 0;
+		let answered = false;
+		let selectedAnswers = [];
+
+		function renderQuestion() {
+			const currentQuestion = questions[currentQuestionIndex];
+			const questionNumber = currentQuestionIndex + 1;
+			const percentComplete = Math.round((questionNumber / questions.length) * 100);
+
+			answered = false;
+			categoryElement.textContent = currentQuestion.category;
+			questionElement.textContent = currentQuestion.question;
+			progressText.textContent = `Question ${questionNumber} of ${questions.length}`;
+			progressPercent.textContent = `${percentComplete}% complete`;
+			progressFill.style.width = `${percentComplete}%`;
+			progressTrack.setAttribute("aria-valuemax", questions.length);
+			progressTrack.setAttribute("aria-valuenow", questionNumber);
+			progressTrack.setAttribute("aria-valuetext", `Question ${questionNumber} of ${questions.length}, ${percentComplete}% complete`);
+			feedback.className = "feedback";
+			nextButton.className = "primary-button next-button";
+			nextButton.textContent = questionNumber === questions.length ? "See results" : "Next question";
+			answerList.replaceChildren();
+
+			currentQuestion.answers.forEach((answer, answerIndex) => {
+				const button = document.createElement("button");
+				button.className = "answer-button";
+				button.type = "button";
+				button.innerHTML = `<span class="answer-key">${answerKeys[answerIndex]}</span><span>${answer}</span>`;
+				button.addEventListener("click", () => selectAnswer(answerIndex));
+				answerList.appendChild(button);
+			});
+		}
+
+		function selectAnswer(selectedIndex) {
+			if (answered) {
+				return;
+			}
+
+			answered = true;
+			selectedAnswers[currentQuestionIndex] = selectedIndex;
+			const currentQuestion = questions[currentQuestionIndex];
+			const answerButtons = answerList.querySelectorAll("button");
+			const isCorrect = selectedIndex === currentQuestion.correctIndex;
+
+			answerButtons.forEach((button, answerIndex) => {
+				button.disabled = true;
+				if (answerIndex === currentQuestion.correctIndex) {
+					button.classList.add("correct");
+				}
+			});
+
+			if (isCorrect) {
+				score += 1;
+				feedback.className = "feedback correct visible";
+				feedbackText.textContent = "Correct - great job!";
+			} else {
+				answerButtons[selectedIndex].classList.add("incorrect");
+				feedback.className = "feedback incorrect visible";
+				feedbackText.textContent = `Incorrect - wrong answer selected. Correct answer: ${currentQuestion.answers[currentQuestion.correctIndex]}.`;
+			}
+
+			scoreElement.textContent = score;
+			window.setTimeout(advanceQuiz, 1600);
+		}
+
+		function advanceQuiz() {
+			if (currentQuestionIndex === questions.length - 1) {
+				showResults();
+				return;
+			}
+
+			currentQuestionIndex += 1;
+			renderQuestion();
+		}
+
+		function showResults() {
+			const previousHighScore = Number(localStorage.getItem("teamTriviaHighScore")) || 0;
+			const highScore = Math.max(score, previousHighScore);
+			const percentage = Math.round((score / questions.length) * 100);
+			const performance = percentage >= 80
+				? { message: "Amazing!", className: "amazing" }
+				: percentage >= 50
+					? { message: "Good effort!", className: "good-effort" }
+					: { message: "Keep practicing!", className: "keep-practicing" };
+			localStorage.setItem("teamTriviaHighScore", highScore);
+
+			quizView.classList.add("hidden");
+			results.classList.add("visible");
+			document.getElementById("final-score").textContent = `${score} / ${questions.length}`;
+			document.getElementById("result-summary").textContent = "Here is how your team performed.";
+			document.getElementById("result-percentage").textContent = `${percentage}% correct`;
+			const performanceMessage = document.getElementById("performance-message");
+			performanceMessage.className = `performance-message ${performance.className}`;
+			performanceMessage.textContent = performance.message;
+
+			const resultDetails = document.getElementById("result-details");
+			resultDetails.replaceChildren();
+			questions.forEach((question, questionIndex) => {
+				const selectedIndex = selectedAnswers[questionIndex];
+				const isCorrect = selectedIndex === question.correctIndex;
+				const item = document.createElement("li");
+				const dot = document.createElement("span");
+				const content = document.createElement("div");
+				const questionText = document.createElement("p");
+				const answerText = document.createElement("p");
+
+				item.className = `result-item ${isCorrect ? "correct-result" : "incorrect-result"}`;
+				dot.className = "status-dot";
+				dot.setAttribute("aria-hidden", "true");
+				questionText.className = "result-question";
+				questionText.textContent = `${questionIndex + 1}. ${question.question}`;
+				answerText.className = "result-answer";
+				answerText.textContent = isCorrect
+					? `Correct: ${question.answers[selectedIndex]}`
+					: `Incorrect: ${question.answers[selectedIndex]}. Correct answer: ${question.answers[question.correctIndex]}.`;
+				content.append(questionText, answerText);
+				item.append(dot, content);
+				resultDetails.appendChild(item);
+			});
+
+			personalBestElement.textContent = `${highScore} of ${questions.length}`;
+			document.getElementById("high-score").textContent = `Personal best: ${highScore} of ${questions.length}`;
+			playAgainButton.focus();
+		}
+
+		function loadPersonalBest() {
+			const highScore = Number(localStorage.getItem("teamTriviaHighScore")) || 0;
+			personalBestElement.textContent = highScore > 0 ? `${highScore} of ${questions.length}` : "No score yet";
+		}
+
+		function startQuiz() {
+			welcomeView.classList.add("hidden");
+			quizView.classList.remove("hidden");
+			questionElement.focus();
+		}
+
+		function shuffleQuestions() {
+			const previousOrder = questions.map((question) => question.question).join("|");
+
+			for (let index = questions.length - 1; index > 0; index -= 1) {
+				const randomIndex = Math.floor(Math.random() * (index + 1));
+				[questions[index], questions[randomIndex]] = [questions[randomIndex], questions[index]];
+			}
+
+			const shuffledOrder = questions.map((question) => question.question).join("|");
+			if (questions.length > 1 && shuffledOrder === previousOrder) {
+				questions.push(questions.shift());
+			}
+		}
+
+		function restartQuiz() {
+			currentQuestionIndex = 0;
+			score = 0;
+			selectedAnswers = [];
+			shuffleQuestions();
+			scoreElement.textContent = score;
+			results.classList.remove("visible");
+			quizView.classList.remove("hidden");
+			renderQuestion();
+		}
+
+		nextButton.addEventListener("click", () => {
+			if (!answered) {
+				return;
+			}
+
+			advanceQuiz();
+		});
+
+		startButton.addEventListener("click", startQuiz);
+		playAgainButton.addEventListener("click", restartQuiz);
+		loadPersonalBest();
+		renderQuestion();
+	</script>
+</body>
+</html>
