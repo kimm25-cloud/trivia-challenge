@@ -19,6 +19,7 @@
 - R15: Prepare the frontend, API, and storage configuration for Azure Static Web Apps.
 - R16: Save joined players and show the live top three during play.
 - R17: Let a host manage browser-saved questions and pictures from the welcome screen.
+- R18: Share host-updated questions and pictures with every player through Azure storage.
 
 [x] Task 1: Create welcome, quiz, and results sections with a title, description, question area, score, and status area.
 	Satisfies: R1, R6
@@ -72,7 +73,7 @@
 	Satisfies: R14, R15
 	Done when: The API validates submissions, preserves each name's best score, and returns scores ordered by score and completion time.
 
-[ ] Task 14: Add Azure Static Web Apps configuration and deployment instructions.
+[x] Task 14: Add Azure Static Web Apps configuration and deployment instructions.
 	Satisfies: R15
 	Done when: The repository documents the Azure app, API, output, and storage settings needed for deployment.
 
@@ -84,12 +85,22 @@
 	Satisfies: R17
 	Done when: A host can add, update, and remove browser-saved questions with four answers and a picture, and can restore the sample questions.
 
+[x] Task 17: Add shared Azure question and picture storage.
+	Satisfies: R18
+	Done when: Saving questions writes them to Azure Table and Blob Storage, and another browser loads the same set before starting.
+
 ## Progress Log
 
 ### GitHub Pages Entry Point
 
 - **What changed:** Added a root page that opens the trivia app from `app/index.html` when GitHub Pages publishes from the repository root.
 - **How to test in your browser:** Open the GitHub Pages site and confirm it automatically displays the Team Trivia Challenge welcome screen instead of the repository title.
+
+### Tasks 14 and 17
+
+- **What changed:** Documented Azure Static Web Apps deployment and added a public question API. Complete question sets are published atomically, metadata is stored in Azure Table Storage, uploaded pictures are stored in Azure Blob Storage, and clients refresh shared content without changing an active round.
+- **Requirements satisfied:** R15 and R18.
+- **How to test in your browser:** Deploy to Azure with `SCORE_STORAGE_CONNECTION_STRING`, save a host edit, then open the Azure URL in another browser and confirm the same question and picture load before the next round.
 
 ### Task 1
 

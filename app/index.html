@@ -864,7 +864,7 @@
 				<div class="host-editor-header">
 					<div>
 						<h2 id="host-title" tabindex="-1">Host question editor</h2>
-						<p class="host-help">Changes are saved in this browser and used for the next round. No host account is required.</p>
+						<p class="host-help">On Azure, changes are shared with every visitor for the next round. Anyone with the page link can edit them; no host account is required.</p>
 					</div>
 					<button id="close-editor-button" class="secondary-button" type="button">Back to welcome</button>
 				</div>
@@ -1067,6 +1067,16 @@
 			return cloneQuestions(defaultQuestions);
 		}
 
+		function storeQuestionsLocally(source = questions) {
+			try {
+				localStorage.setItem(QUESTION_STORAGE_KEY, JSON.stringify(source));
+				return true;
+			} catch (error) {
+				console.warn("Questions exceed this browser's offline storage limit.", error);
+				return false;
+			}
+		}
+
 		let questions = loadQuestions();
 		const answerKeys = ["A", "B", "C", "D"];
 		const welcomeView = document.getElementById("welcome-view");
@@ -1114,6 +1124,7 @@
 		let selectedAnswers = [];
 		let playerName = "";
 		let leaderboardRefreshTimer = null;
+		let questionRefreshTimer = null;
 		let pendingImageSource = "";
 
 		function renderQuestion() {
@@ -1268,6 +1279,7 @@
 
 			playerName = normalizedName;
 			joinError.textContent = "";
+			await refreshSharedQuestions();
 			welcomeView.classList.add("hidden");
 			quizView.classList.remove("hidden");
 			score = 0;
@@ -1291,10 +1303,11 @@
 			}
 		}
 
-		function restartQuiz() {
+		async function restartQuiz() {
 			currentQuestionIndex = 0;
 			score = 0;
 			selectedAnswers = [];
+			await refreshSharedQuestions();
 			shuffleQuestions();
 			scoreElement.textContent = score;
 			results.classList.remove("visible");
@@ -1432,10 +1445,98 @@
 			}
 		}
 
-		function saveQuestions() {
-			localStorage.setItem(QUESTION_STORAGE_KEY, JSON.stringify(questions));
+		function imageSourceToDataUrl(source) {
+			if (!source || source.startsWith("data:")) {
+				return Promise.resolve(source);
+			}
+
+			return fetch(source)
+				.then((response) => {
+					if (!response.ok) {
+						throw new Error("A question picture could not be loaded.");
+					}
+					return response.blob();
+				})
+				.then((blob) => new Promise((resolve, reject) => {
+					if (!SUPPORTED_IMAGE_TYPES.includes(blob.type) || blob.size > MAX_IMAGE_BYTES) {
+						reject(new Error("A question picture is not supported or is too large."));
+						return;
+					}
+					const reader = new FileReader();
+					reader.addEventListener("load", () => resolve(String(reader.result)));
+					reader.addEventListener("error", () => reject(new Error("A question picture could not be read.")));
+					reader.readAsDataURL(blob);
+				}));
+		}
+
+		async function questionsForSharing() {
+			return Promise.all(questions.map(async (question) => ({
+				...question,
+				answers: [...question.answers],
+				image: question.image
+					? { ...question.image, src: await imageSourceToDataUrl(question.image.src) }
+					: null
+			})));
+		}
+
+		async function refreshSharedQuestions(updateEditor = false) {
+			if (!canUseSharedScoreService) {
+				return false;
+			}
+
+			try {
+				const response = await fetch("/api/questions", { headers: { Accept: "application/json" } });
+				if (!response.ok) {
+					throw new Error("Shared question request failed.");
+				}
+				const data = await response.json();
+				if (!Array.isArray(data.questions) || data.questions.length === 0 || !data.questions.every(isValidQuestion)) {
+					return false;
+				}
+
+				questions = cloneQuestions(data.questions);
+				storeQuestionsLocally();
+				currentQuestionIndex = Math.min(currentQuestionIndex, questions.length - 1);
+				loadPersonalBest();
+				renderQuestion();
+				if (updateEditor) {
+					const selectedIndex = Math.min(Number(questionSelect.value) || 0, questions.length - 1);
+					populateQuestionSelect(selectedIndex);
+					loadQuestionIntoEditor(selectedIndex);
+					editorMessage.textContent = "Shared questions refreshed.";
+				}
+				return true;
+			} catch (error) {
+				return false;
+			}
+		}
+
+		async function saveQuestions() {
+			if (!canUseSharedScoreService) {
+				if (!storeQuestionsLocally()) {
+					throw new Error("These pictures are too large for this browser's storage.");
+				}
+				loadPersonalBest();
+				renderQuestion();
+				return "Saved in this browser. Deploy on Azure to share changes.";
+			}
+
+			const response = await fetch("/api/questions", {
+				method: "PUT",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ questions: await questionsForSharing() })
+			});
+			const data = await response.json();
+			if (!response.ok) {
+				throw new Error(data.error || "Shared questions could not be saved.");
+			}
+			if (Array.isArray(data.questions) && data.questions.length > 0) {
+				questions = cloneQuestions(data.questions);
+				storeQuestionsLocally();
+			}
 			loadPersonalBest();
 			renderQuestion();
+			return "Shared questions saved for everyone.";
 		}
 
 		function populateQuestionSelect(selectedIndex = 0) {
@@ -1478,9 +1579,10 @@
 			showImagePreview(question.image?.src || "");
 		}
 
-		function openHostEditor() {
+		async function openHostEditor() {
 			welcomeView.classList.add("hidden");
 			hostEditor.classList.add("visible");
+			await refreshSharedQuestions();
 			populateQuestionSelect();
 			loadQuestionIntoEditor(0);
 			document.getElementById("host-title").focus();
@@ -1492,7 +1594,7 @@
 			hostButton.focus();
 		}
 
-		function prepareNewQuestion() {
+		async function prepareNewQuestion() {
 			if (questions.length >= MAX_QUESTIONS) {
 				editorMessage.textContent = `A quiz can contain up to ${MAX_QUESTIONS} questions.`;
 				return;
@@ -1507,17 +1609,19 @@
 			};
 			questions.push(newQuestion);
 			try {
-				saveQuestions();
+				const message = await saveQuestions();
 				populateQuestionSelect(questions.length - 1);
 				loadQuestionIntoEditor(questions.length - 1);
+				editorMessage.textContent = message;
 				editorQuestion.select();
 			} catch (error) {
 				questions.pop();
+				storeQuestionsLocally();
 				editorMessage.textContent = "The new question could not be saved in this browser.";
 			}
 		}
 
-		function deleteSelectedQuestion() {
+		async function deleteSelectedQuestion() {
 			if (questions.length === 1) {
 				editorMessage.textContent = "Keep at least one question in the quiz.";
 				return;
@@ -1530,28 +1634,37 @@
 
 			const removedQuestion = questions.splice(selectedIndex, 1)[0];
 			try {
-				saveQuestions();
+				const message = await saveQuestions();
 				populateQuestionSelect(Math.max(0, selectedIndex - 1));
 				loadQuestionIntoEditor(Number(questionSelect.value));
+				editorMessage.textContent = message;
 			} catch (error) {
 				questions.splice(selectedIndex, 0, removedQuestion);
+				storeQuestionsLocally();
 				editorMessage.textContent = "The question could not be deleted.";
 			}
 		}
 
-		function restoreSampleQuestions() {
+		async function restoreSampleQuestions() {
 			if (!window.confirm("Replace all edited questions with the original sample questions?")) {
 				return;
 			}
 
+			const previousQuestions = questions;
 			questions = cloneQuestions(defaultQuestions);
-			saveQuestions();
-			populateQuestionSelect();
-			loadQuestionIntoEditor(0);
-			editorMessage.textContent = "Sample questions restored.";
+			try {
+				const message = await saveQuestions();
+				populateQuestionSelect();
+				loadQuestionIntoEditor(0);
+				editorMessage.textContent = `Sample questions restored. ${message}`;
+			} catch (error) {
+				questions = previousQuestions;
+				storeQuestionsLocally();
+				editorMessage.textContent = error.message;
+			}
 		}
 
-		questionForm.addEventListener("submit", (event) => {
+		questionForm.addEventListener("submit", async (event) => {
 			event.preventDefault();
 			const imageAlt = editorImageAlt.value.trim();
 			if (pendingImageSource && !imageAlt) {
@@ -1571,12 +1684,13 @@
 			};
 
 			try {
-				saveQuestions();
+				const message = await saveQuestions();
 				populateQuestionSelect(selectedIndex);
-				editorMessage.textContent = "Question saved for the next round.";
+				editorMessage.textContent = message;
 			} catch (error) {
 				questions[selectedIndex] = previousQuestion;
-				editorMessage.textContent = "The question could not be saved. Try a smaller picture.";
+				storeQuestionsLocally();
+				editorMessage.textContent = error.message || "The question could not be saved. Try a smaller picture.";
 			}
 		});
 
@@ -1637,7 +1751,16 @@
 		loadPersonalBest();
 		renderQuestion();
 		refreshLeaderboard();
+		refreshSharedQuestions();
 		startLeaderboardRefresh();
+		questionRefreshTimer = window.setInterval(() => {
+			const editorInputIsActive = hostEditor.classList.contains("visible")
+				&& ["INPUT", "SELECT"].includes(document.activeElement?.tagName);
+			if (!quizView.classList.contains("hidden") || editorInputIsActive) {
+				return;
+			}
+			refreshSharedQuestions(hostEditor.classList.contains("visible"));
+		}, 10000);
 	</script>
 </body>
 </html>

@@ -87,6 +87,13 @@ Use six coffee-identification questions with four multiple-choice answers each. 
 - Save edited questions in browser storage and provide a way to restore the original sample questions.
 - **How to verify:** Open the host editor, change a question and picture, save it, start the quiz, and confirm the saved content is used after refreshing the page.
 
+### R18: Shared Questions and Pictures
+
+- When hosted on Azure, save the host's question set in Azure Table Storage and save uploaded pictures in Azure Blob Storage.
+- Load the shared question set for every player before a round starts, while keeping the sample questions available if the service is unavailable.
+- Allow anyone with the deployed page link to update the shared questions, as selected for this prototype.
+- **How to verify:** Save a changed question and picture in one browser, open the Azure site in a different browser, and confirm the same question and picture appear.
+
 ## Demo Script
 
 1. Open the page and point out the saved personal best on the welcome screen.
@@ -101,6 +108,7 @@ Use six coffee-identification questions with four multiple-choice answers each. 
 10. Enter a display name, finish the quiz, and confirm its best score appears on the shared leaderboard in another browser.
 11. Watch the top-three board while players answer and confirm their scores update during the round.
 12. Return to the welcome screen, open the host question editor, save a question with a picture, and confirm it appears in the next round.
+13. Open the Azure site in another browser and confirm the updated shared question and picture load there too.
 
 ## Verification Report
 
