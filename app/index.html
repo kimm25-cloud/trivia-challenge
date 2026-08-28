@@ -1032,7 +1032,8 @@
 		const MAX_IMAGE_BYTES = 1.5 * 1024 * 1024;
 		const MAX_QUESTIONS = 100;
 		const SUPPORTED_IMAGE_TYPES = ["image/png", "image/jpeg", "image/gif", "image/webp"];
-		const canUseSharedScoreService = window.location.protocol !== "file:";
+		const canUseSharedScoreService = window.location.protocol !== "file:"
+			&& !window.location.hostname.endsWith(".github.io");
 
 		function cloneQuestions(source) {
 			return source.map((question) => ({
