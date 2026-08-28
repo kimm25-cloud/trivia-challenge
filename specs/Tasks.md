@@ -15,6 +15,10 @@
 - R11: Restart with shuffled questions from a Play Again button.
 - R12: Provide a responsive, touch-friendly phone layout.
 - R13: Show an accessible image question with four text choices.
+- R14: Collect display names and keep one shared best score per name.
+- R15: Prepare the frontend, API, and storage configuration for Azure Static Web Apps.
+- R16: Save joined players and show the live top three during play.
+- R17: Let a host manage browser-saved questions and pictures from the welcome screen.
 
 [x] Task 1: Create welcome, quiz, and results sections with a title, description, question area, score, and status area.
 	Satisfies: R1, R6
@@ -59,6 +63,26 @@
 [x] Task 11: Add an image to each coffee-identification question.
 	Satisfies: R13
 	Done when: All six questions show the matching coffee image with useful alternative text, and selecting one of four text choices uses the normal answer feedback and scoring flow.
+
+[x] Task 12: Add a display-name form and shared leaderboard to the quiz.
+	Satisfies: R14
+	Done when: A player must enter a valid display name, and shared scores appear on the welcome and results screens.
+
+[x] Task 13: Add an Azure Functions score API backed by Azure Table Storage.
+	Satisfies: R14, R15
+	Done when: The API validates submissions, preserves each name's best score, and returns scores ordered by score and completion time.
+
+[ ] Task 14: Add Azure Static Web Apps configuration and deployment instructions.
+	Satisfies: R15
+	Done when: The repository documents the Azure app, API, output, and storage settings needed for deployment.
+
+[x] Task 15: Add player joining and a live top-three scoreboard.
+	Satisfies: R14, R16
+	Done when: Starting requires a display name, joining saves a zero score, each answer updates that score, and the top three refresh on the welcome, quiz, and results screens.
+
+[x] Task 16: Add the host question and picture editor.
+	Satisfies: R17
+	Done when: A host can add, update, and remove browser-saved questions with four answers and a picture, and can restore the sample questions.
 
 ## Progress Log
 
@@ -127,6 +151,18 @@
 - **What changed:** Added `coffee-1.png` through `coffee-6.png` to the six questions and set the answer key to Cappuccino, Espresso, Latte, Frappe, Iced Coffee, and Mocha. All images work offline and include alternative text.
 - **Requirement satisfied:** R13.
 - **How to test in your browser:** Open `app/index.html`, click **Start challenge**, and complete all six questions. Confirm each numbered coffee image appears and the supplied answer sequence produces a score of 6/6.
+
+### Tasks 12, 13, and 15
+
+- **What changed:** Added a required display name, browser fallback scores, shared API updates when a player joins and answers, a four-second refresh, and live top-three boards on the welcome, quiz, and results screens. Updated the score API to support host-edited quiz lengths from 1 to 100 questions.
+- **Requirements satisfied:** R14 and R16.
+- **How to test in your browser:** Open `app/index.html`, enter a name, and click **Join and start**. Confirm the board immediately lists the name at 0, then answer correctly and confirm it changes to 1. In a deployed app, repeat from other browsers and confirm the shared top three refresh during play.
+
+### Task 16
+
+- **What changed:** Added a keyboard-accessible host editor on the welcome screen. Hosts can add, update, and delete up to 100 questions, choose the correct answer, upload or remove a supported picture, provide its accessible description, persist changes in the browser, and restore the six sample questions.
+- **Requirement satisfied:** R17.
+- **How to test in your browser:** Click **Host: manage questions**, edit a question and picture, and save. Return to the welcome screen, refresh, start a round, and confirm the edited content appears. Use **Restore sample questions** to reset the quiz.
 
 ## Verification Complete
 

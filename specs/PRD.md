@@ -61,6 +61,32 @@ Use six coffee-identification questions with four multiple-choice answers each. 
 - Give the image useful alternative text and keep it fully visible on phone and desktop screens.
 - **How to verify:** Complete all six questions and confirm each matching coffee image loads and can be answered using one of four choices.
 
+### R14: Player Names and Shared Scoreboard
+
+- Ask for a display name before starting and show the best score for each name on a shared leaderboard.
+- Treat names as the same regardless of capitalization, keep only the best score, and use the newest completion time to order ties.
+- **How to verify:** Submit scores from two browsers and confirm both names appear; submit a lower score for one name and confirm its best score does not decrease.
+
+### R15: Azure Static Web Apps Deployment
+
+- Deploy the page from `app`, serve the score API from `api`, and store scores in Azure Table Storage.
+- Keep the quiz playable with a clear status message when the shared score service is unavailable.
+- **How to verify:** Deploy with Azure Static Web Apps, configure the storage connection setting, complete a quiz, and confirm the score appears after refreshing another browser.
+
+### R16: Live Top-Three Scores
+
+- Require a display name before a player starts, save that player with a score of zero when they join, and update the saved score after every answer.
+- Show the top three named players on the welcome, quiz, and results screens, refreshing shared scores while a round is being played.
+- Keep a browser-based fallback scoreboard and show a clear status if the shared score service is unavailable.
+- **How to verify:** Join with three or more names in separate browser sessions, answer questions, and confirm the top three scores update during play.
+
+### R17: Host Question Editor
+
+- Provide a host question editor from the welcome screen without adding accounts or passwords.
+- Let the host add, update, and remove questions, including the question text, four answers, correct answer, category, picture, and useful picture description.
+- Save edited questions in browser storage and provide a way to restore the original sample questions.
+- **How to verify:** Open the host editor, change a question and picture, save it, start the quiz, and confirm the saved content is used after refreshing the page.
+
 ## Demo Script
 
 1. Open the page and point out the saved personal best on the welcome screen.
@@ -72,6 +98,9 @@ Use six coffee-identification questions with four multiple-choice answers each. 
 7. Click **Play Again** and confirm the quiz restarts at question 1 with shuffled questions.
 8. Narrow the browser window and confirm the layout and answer buttons remain easy to use.
 9. Find the image question and identify the pictured object from its four choices.
+10. Enter a display name, finish the quiz, and confirm its best score appears on the shared leaderboard in another browser.
+11. Watch the top-three board while players answer and confirm their scores update during the round.
+12. Return to the welcome screen, open the host question editor, save a question with a picture, and confirm it appears in the next round.
 
 ## Verification Report
 
@@ -90,3 +119,5 @@ Use six coffee-identification questions with four multiple-choice answers each. 
 | R11 | PASS | Play Again reset the score to 0 and progress to question 1, enabled all answers, and produced a different six-question order. |
 | R12 | PASS | At 320px, welcome and quiz screens had no horizontal overflow, answer buttons were 64px tall, and the Start button was 48px tall. |
 | R13 | PASS | All six local coffee images loaded with useful alternative text, matched the supplied answer key, and produced a verified score of 6/6. |
+| R16 | PASS | Browser verification showed a named player join at 0/6 and move to 1/6 immediately after a correct answer; the offline fallback status remained visible. |
+| R17 | PASS | Browser verification changed and saved a question, restored the sample set, and confirmed keyboard focus moved into the host editor. |
