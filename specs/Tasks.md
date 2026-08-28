@@ -86,6 +86,11 @@
 
 ## Progress Log
 
+### GitHub Pages Entry Point
+
+- **What changed:** Added a root page that opens the trivia app from `app/index.html` when GitHub Pages publishes from the repository root.
+- **How to test in your browser:** Open the GitHub Pages site and confirm it automatically displays the Team Trivia Challenge welcome screen instead of the repository title.
+
 ### Task 1
 
 - **What changed:** Added a dedicated welcome section with the project title, challenge description, and Start Challenge button. Kept the quiz and results as separate sections, with question, score, and status areas ready for the quiz flow.
